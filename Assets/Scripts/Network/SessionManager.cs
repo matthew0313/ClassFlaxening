@@ -29,6 +29,8 @@ public class SessionManager : MonoBehaviour
     }
     public event Action onSignIn;
     public event Action<string> onPlayerNameChange;
+    public event Action onSessionMoveStart, onSessionMoveFail;
+    public bool sessionMoving { get; private set; } = false;
     public bool signedIn { get; private set; } = false;
     public string playerName
     {
@@ -87,22 +89,71 @@ public class SessionManager : MonoBehaviour
     }
     public async void StartSession()
     {
-        activeSession = await MultiplayerService.Instance.CreateSessionAsync(await GetSessionOptions());
+        sessionMoving = true;
+        onSessionMoveStart?.Invoke();
+        try 
+        {
+            activeSession = await MultiplayerService.Instance.CreateSessionAsync(await GetSessionOptions());
+        }
+        catch
+        {
+            onSessionMoveFail?.Invoke();
+        }
+        finally
+        {
+            sessionMoving = false;
+        }
     }
     public async void JoinOrStartSession(string sessionId)
     {
-        activeSession = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, await GetSessionOptions());
-        Debug.Log($"Session {activeSession.Id} Joined");
+        sessionMoving = true;
+        onSessionMoveStart?.Invoke();
+        try
+        {
+            activeSession = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, await GetSessionOptions());
+        }
+        catch
+        {
+            onSessionMoveFail?.Invoke();
+        }
+        finally
+        {
+            sessionMoving = false;
+        }
     }
     public async void JoinSessionById(string sessionId)
     {
-        activeSession = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionId);
-        Debug.Log($"Session {activeSession.Id} Joined");
+        sessionMoving = true;
+        onSessionMoveStart?.Invoke();
+        try
+        {
+            activeSession = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionId);
+        }
+        catch
+        {
+            onSessionMoveFail?.Invoke();
+        }
+        finally
+        {
+            sessionMoving = false;
+        }
     }
     public async void JoinSessionByCode(string sessionCode)
     {
-        activeSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(sessionCode);
-        Debug.Log($"Session {activeSession.Id} Joined");
+        sessionMoving = true;
+        onSessionMoveStart?.Invoke();
+        try
+        {
+            activeSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(sessionCode);
+        }
+        catch
+        {
+            onSessionMoveFail?.Invoke();
+        }
+        finally
+        {
+            sessionMoving = false;
+        }
     }
     public async void KickPlayer(string playerId)
     {
@@ -125,6 +176,8 @@ public class SessionManager : MonoBehaviour
     {
         if(activeSession != null)
         {
+            sessionMoving = true;
+            onSessionMoveStart?.Invoke();
             try
             {
                 await activeSession.LeaveAsync();
@@ -132,6 +185,7 @@ public class SessionManager : MonoBehaviour
             catch { }
             finally
             {
+                sessionMoving = false;
                 activeSession = null;
             }
         }
