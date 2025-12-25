@@ -8,6 +8,8 @@ using System.Text;
 using Newtonsoft.Json;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
+using Unity.Collections;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -60,6 +62,7 @@ public class GameManager : NetworkBehaviour
         }
     }
     public event Action onRoundStart;
+    public readonly NetworkVariable<FixedString4096Bytes> currentQuiz = new("");
     public void StartRound()
     {
         if (!IsHost || gameState.Value != GameState.Intermission) return;
