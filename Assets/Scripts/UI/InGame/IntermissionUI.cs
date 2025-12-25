@@ -21,14 +21,11 @@ public class IntermissionUI : MonoBehaviour
     [SerializeField] CanvasGroup fadeTarget;
     [SerializeField] float tweenTime = 0.5f;
     Tween hideTween;
-    private void Awake()
-    {
-        hideTween = DOTween.Sequence()
-                .Append(fadeTarget.DOFade(0.0f, tweenTime))
-                .SetAutoKill(false);
-    }
     public void Hide(bool instant = false)
     {
+        if(hideTween == null) hideTween = DOTween.Sequence()
+                .Append(fadeTarget.DOFade(0.0f, tweenTime))
+                .SetAutoKill(false);
         hideTween.OnStepComplete(() => gameObject.SetActive(false));
         hideTween.PlayForward();
         if (instant) hideTween.Complete();

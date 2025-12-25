@@ -27,7 +27,6 @@ public class GameManager : NetworkBehaviour
         Instance = this;
         if (NetworkManager.IsHost)
         {
-            NetworkObject.Spawn(true);
             Player player = Instantiate(playerPrefab);
             player.NetworkObject.SpawnAsPlayerObject(NetworkManager.Singleton.LocalClientId, true);
         }
@@ -40,6 +39,7 @@ public class GameManager : NetworkBehaviour
     {
         NetworkManager.Singleton.OnConnectionEvent -= OnConnectionEvent;
     }
+    public Player GetPlayer(ulong clientID) => players.Find(player => player.OwnerClientId == clientID);
     public void AddPlayer(Player player)
     {
         players.Add(player);
@@ -53,7 +53,7 @@ public class GameManager : NetworkBehaviour
     }
     private void OnConnectionEvent(NetworkManager manager, ConnectionEventData data)
     {
-        if(HasAuthority && data.EventType == ConnectionEvent.PeerConnected)
+        if(IsHost && data.EventType == ConnectionEvent.PeerConnected)
         {
             Player player = Instantiate(playerPrefab);
             player.NetworkObject.SpawnAsPlayerObject(data.ClientId, true);

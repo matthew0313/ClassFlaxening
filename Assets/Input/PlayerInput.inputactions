@@ -3,13 +3,13 @@
     "name": "PlayerInput",
     "maps": [
         {
-            "name": "UI",
+            "name": "InGame",
             "id": "4dfbb227-3b2e-4ed8-90a6-da5dd49765de",
             "actions": [
                 {
-                    "name": "Escape",
+                    "name": "OpenChat",
                     "type": "Button",
-                    "id": "d47390ed-8e33-4b08-8d72-fbfbee1323b5",
+                    "id": "45659083-e6b7-4340-a067-54ff39e7fb67",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -19,7 +19,35 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "bac29c9a-78fb-41cb-92c4-012637bb96d7",
+                    "id": "f7f3c497-d213-44e1-968f-cee73b24eaf1",
+                    "path": "<Keyboard>/slash",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenChat",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "1e1f353c-3866-42d4-9733-c6cc8f732c52",
+            "actions": [
+                {
+                    "name": "Escape",
+                    "type": "Button",
+                    "id": "2527ecb7-fdae-468c-af33-df2a81a63ddd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "8d257957-14d2-48e0-a152-1108f6285ca5",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",

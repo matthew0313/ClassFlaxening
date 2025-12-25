@@ -9,6 +9,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -34,6 +35,7 @@ public class PauseTab : Tab
     public override void Open(ITabOpener opener)
     {
         base.Open(opener);
+        EventSystem.current.SetSelectedGameObject(exitButton.gameObject);
         if (tween == null) tween = DOTween.Sequence()
             .Append(moveTarget.DOAnchorMin(new Vector2(0, 0), tweenTime))
             .Join(moveTarget.DOAnchorMax(new Vector2(1, 1), tweenTime))
@@ -49,6 +51,7 @@ public class PauseTab : Tab
     }
     public override void Close()
     {
+        EventSystem.current.SetSelectedGameObject(null);
         tween.OnStepComplete(() => base.Close());
         tween.PlayBackwards();
     }

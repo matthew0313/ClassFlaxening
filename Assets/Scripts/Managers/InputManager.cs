@@ -34,4 +34,5 @@ public class InputManager : MonoBehaviour
     private void OnDisable() => playerInput.Disable();
     private void OnDestroy() => playerInput.Dispose();
     public bool UIEscapeInput() => playerInput.UI.Escape.triggered;
+    public bool OpenChatInput() => playerInput.InGame.OpenChat.triggered;
 }

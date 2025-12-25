@@ -9,6 +9,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -42,7 +43,11 @@ public class InGameUI : MonoBehaviour, ITabOpener
     private void Update()
     {
         if (currentTab != null) currentTab.OpenUpdate(this);
-        else if (InputManager.Instance.UIEscapeInput()) OpenTab(pauseTab);
+        else if (InputManager.Instance.UIEscapeInput())
+        {
+            if(EventSystem.current.currentSelectedGameObject != null) EventSystem.current.SetSelectedGameObject(null);
+            else OpenTab(pauseTab);
+        }
     }
     private void OnEnable()
     {

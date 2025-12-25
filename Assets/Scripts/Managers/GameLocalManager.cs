@@ -30,7 +30,7 @@ public class GameLocalManager : MonoBehaviour
     }
     private void OnConnectionEvent(NetworkManager manager, ConnectionEventData data)
     {
-        if(data.EventType == ConnectionEvent.ClientDisconnected)
+        if(data.EventType == ConnectionEvent.ClientDisconnected && data.ClientId == NetworkManager.Singleton.LocalClientId)
         {
             SceneManager.LoadScene("Title");
         }

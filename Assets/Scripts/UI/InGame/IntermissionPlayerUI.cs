@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -34,7 +35,8 @@ public class IntermissionPlayerUI : MonoBehaviour
             player.profileIndex.OnValueChanged += OnProfileIndexChange;
             OnProfileIndexChange(-1, player.profileIndex.Value);
             playerNameText.gameObject.SetActive(true);
-            playerNameText.text = player.playerName.Value.ToString();
+            player.playerName.OnValueChanged += OnPlayerNameChange;
+            OnPlayerNameChange(new(), player.playerName.Value);
             profileNextButton.gameObject.SetActive(player.IsOwner);
             profilePrevButton.gameObject.SetActive(player.IsOwner);
         }
@@ -52,5 +54,9 @@ public class IntermissionPlayerUI : MonoBehaviour
         if (currentProfile != -1) profileImageList[currentProfile].SetActive(false);
         profileImageList[current].SetActive(true);
         currentProfile = current;
+    }
+    void OnPlayerNameChange(FixedString512Bytes prev, FixedString512Bytes current)
+    {
+        playerNameText.text = current.ToString();
     }
 }

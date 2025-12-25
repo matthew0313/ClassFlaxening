@@ -5,7 +5,7 @@ public class Player : NetworkBehaviour
 {
     public static Player localPlayer { get; private set; }
 
-    public readonly NetworkVariable<FixedString128Bytes> playerName = new(new FixedString128Bytes("NoName"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public readonly NetworkVariable<FixedString512Bytes> playerName = new(new FixedString128Bytes("NoName"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public readonly NetworkVariable<int> profileIndex = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private void Start()
     {
