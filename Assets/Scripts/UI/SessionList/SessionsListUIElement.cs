@@ -42,7 +42,7 @@ public class SessionsListUIElement : MonoBehaviour
     public void Set(ISessionInfo info)
     {
         this.info = info;
-        sessionID.text = info.Id;
+        sessionID.text = $"ID: {info.Id}";
         sessionInfo.text = $"플레이어 수: {info.MaxPlayers - info.AvailableSlots}/{info.MaxPlayers}";
     }
     void Join()

@@ -13,7 +13,6 @@ public class SessionsListUI : MonoBehaviour
     [SerializeField] SessionsListUIElement elementPrefab;
     [SerializeField] Transform elementAnchor;
     readonly List<SessionsListUIElement> elements = new List<SessionsListUIElement>();
-    private void OnEnable() => Refresh();
     public async void Refresh()
     {
         var sessions = await SessionManager.Instance.QuerySessions();

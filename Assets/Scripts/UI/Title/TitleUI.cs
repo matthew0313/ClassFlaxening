@@ -33,19 +33,22 @@ public class TitleUI : MonoBehaviour, ITabOpener
     }
     private void OnConnectionEvent(NetworkManager manager, ConnectionEventData data)
     {
-        if(data.EventType == ConnectionEvent.ClientConnected)
+        if(data.EventType == ConnectionEvent.ClientConnected && manager.IsHost)
         {
-            SceneManager.LoadScene("Game");
+            manager.SceneManager.LoadScene("Game", LoadSceneMode.Single);
         }
     }
-    ITab currentTab;
-    public void OpenTab(ITab tab)
+    Tab currentTab;
+    public void OpenTab(Tab tab)
     {
         if (currentTab != null) currentTab.Close();
         currentTab = tab;
         if(currentTab != null) currentTab.Open(this);
     }
-
+    private void Update()
+    {
+        if(currentTab != null) currentTab.OpenUpdate(this);
+    }
     public void CloseTab()
     {
         if (currentTab != null) currentTab.Close();
@@ -59,11 +62,13 @@ public class TitleUI : MonoBehaviour, ITabOpener
                 .Append(joiningFadeGroup.DOFade(1.0f, joiningFadeTime))
                 .SetAutoKill(false);
         joiningTextUpdate = Timing.RunCoroutine(JoiningTextUpdate().CancelWith(gameObject));
+        joiningFadeGroup.blocksRaycasts = true;
         joiningTween.PlayForward();
     }
     private void OnSessionMoveFail()
     {
         Timing.KillCoroutines(joiningTextUpdate);
+        joiningFadeGroup.blocksRaycasts = false;
         joiningTween.PlayBackwards();
     }
     IEnumerator<float> JoiningTextUpdate()

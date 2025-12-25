@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Multiplayer.Center.NetcodeForGameObjectsExample;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -11,7 +12,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SessionsTab : MonoBehaviour, ITab
+public class SessionsTab : Tab
 {
     [SerializeField] SessionsListUI sessionList;
     [SerializeField] TMP_InputField playerNameField, joinIDField;
@@ -34,25 +35,27 @@ public class SessionsTab : MonoBehaviour, ITab
         if (!initialized) Initialize();
     }
     Tween tween;
-    public void Open(ITabOpener opener)
+    public override void Open(ITabOpener opener)
     {
+        base.Open(opener);
         if (tween == null) tween = DOTween.Sequence()
                 .Append(backgroundGroup.DOFade(1.0f, appearTime))
                 .Append(listGroupLeft.DOFade(1.0f, appearTime))
                 .Append(listGroupRight.DOFade(1.0f, appearTime))
                 .SetAutoKill(false);
-        gameObject.SetActive(true);
+        sessionList.Refresh();
         tween.OnStepComplete(null);
         tween.PlayForward();
     }
-    public void OpenUpdate(ITabOpener opener)
+    public override void OpenUpdate(ITabOpener opener)
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !SessionManager.Instance.sessionMoving) opener.CloseTab();
+        base.OpenUpdate(opener);
+        if (InputManager.Instance.UIEscapeInput() && !SessionManager.Instance.sessionMoving) opener.CloseTab();
     }
-    public void Close()
+    public override void Close()
     {
-        tween.OnStepComplete(() => gameObject.SetActive(false));
-        gameObject.SetActive(false);
+        tween.OnStepComplete(() => base.Close());
+        tween.PlayBackwards();
     }
     void CreateSession() => SessionManager.Instance.StartSession();
     void JoinWithID() => SessionManager.Instance.JoinSessionById(joinIDField.text);

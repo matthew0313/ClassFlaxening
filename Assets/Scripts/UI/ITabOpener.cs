@@ -1,6 +1,6 @@
 using UnityEngine;
 public interface ITabOpener
 {
-    public void OpenTab(ITab tab);
+    public void OpenTab(Tab tab);
     public void CloseTab();
 }
