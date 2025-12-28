@@ -7,6 +7,8 @@ public class Player : NetworkBehaviour
 
     public readonly NetworkVariable<FixedString512Bytes> playerName = new(new FixedString128Bytes("NoName"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public readonly NetworkVariable<int> profileIndex = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public readonly NetworkVariable<bool> answered = new(false);
+    public readonly NetworkVariable<float> score = new(-1.0f);
     private void Start()
     {
         GameManager.Instance.AddPlayer(this);

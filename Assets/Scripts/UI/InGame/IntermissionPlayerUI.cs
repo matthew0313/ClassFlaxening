@@ -15,15 +15,15 @@ using UnityEngine.UI;
 
 public class IntermissionPlayerUI : MonoBehaviour
 {
-    [SerializeField] List<GameObject> profileImageList = new();
+    [SerializeField] ProfileImageList profileImageList;
+    [SerializeField] Image profileImage;
     [SerializeField] TMP_Text playerNameText;
     [SerializeField] Button profileNextButton, profilePrevButton;
     private void Awake()
     {
-        profileNextButton.onClick.AddListener(() => Player.localPlayer.profileIndex.Value = (Player.localPlayer.profileIndex.Value + 1) % profileImageList.Count);
-        profilePrevButton.onClick.AddListener(() => Player.localPlayer.profileIndex.Value = (Player.localPlayer.profileIndex.Value - 1) % profileImageList.Count);
+        profileNextButton.onClick.AddListener(() => Player.localPlayer.profileIndex.Value = (Player.localPlayer.profileIndex.Value + 1) % profileImageList.profileImages.Count);
+        profilePrevButton.onClick.AddListener(() => Player.localPlayer.profileIndex.Value = ((Player.localPlayer.profileIndex.Value - 1 < 0) ? (profileImageList.profileImages.Count - 1) : (Player.localPlayer.profileIndex.Value - 1)));
     }
-    int currentProfile = -1;
     Player player;
     public void Set(Player player)
     {
@@ -42,8 +42,7 @@ public class IntermissionPlayerUI : MonoBehaviour
         }
         else
         {
-            if (currentProfile != -1) profileImageList[currentProfile].SetActive(false);
-            currentProfile = -1;
+            profileImage.gameObject.SetActive(false);
             playerNameText.gameObject.SetActive(false);
             profileNextButton.gameObject.SetActive(false);
             profilePrevButton.gameObject.SetActive(false);
@@ -51,9 +50,13 @@ public class IntermissionPlayerUI : MonoBehaviour
     }
     void OnProfileIndexChange(int prev, int current)
     {
-        if (currentProfile != -1) profileImageList[currentProfile].SetActive(false);
-        profileImageList[current].SetActive(true);
-        currentProfile = current;
+        if (current == -1) profileImage.gameObject.SetActive(false);
+        else
+        {
+            profileImage.gameObject.SetActive(true);
+            profileImage.sprite = profileImageList.profileImages[current];
+        }
+        
     }
     void OnPlayerNameChange(FixedString512Bytes prev, FixedString512Bytes current)
     {

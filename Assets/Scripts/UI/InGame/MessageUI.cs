@@ -34,7 +34,7 @@ public class MessageUI : MonoBehaviour
     }
     private void Update()
     {
-        if (InputManager.Instance.OpenChatInput())
+        if (InputManager.Instance.OpenChatInput() && (EventSystem.current.currentSelectedGameObject == null || !EventSystem.current.currentSelectedGameObject.TryGetComponent<TMP_InputField>(out _)))
         {
             inputField.Select();
         }

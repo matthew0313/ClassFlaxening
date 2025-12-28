@@ -18,7 +18,9 @@ public class InGameUI : MonoBehaviour, ITabOpener
     public static InGameUI Instance { get; private set; }
 
     [SerializeField] IntermissionUI m_intermissionUI;
+    [SerializeField] QuizUI m_quizUI;
     public IntermissionUI intermissionUI => m_intermissionUI;
+    public QuizUI quizUI => m_quizUI;
 
     [Header("Tabs")]
     [SerializeField] PauseTab pauseTab;
@@ -36,9 +38,10 @@ public class InGameUI : MonoBehaviour, ITabOpener
     {
         GameManager.Instance.gameState.OnValueChanged += (prev, current) =>
         {
-            if (current == GameState.Intermission) intermissionUI.Show();
-            else intermissionUI.Hide();
+            if (current != GameState.Intermission) intermissionUI.Hide();
         };
+        GameManager.Instance.onQuizGetStart += () => quizUI.Show();
+        GameManager.Instance.onQuizGet += (quiz) => quizUI.Set(quiz);
     }
     private void Update()
     {
