@@ -23,6 +23,10 @@ public class BattleUI : MonoBehaviour
     [SerializeField] PooledEffect attackEffect;
     Transform enemyEffectAnchor => GameManager.Instance.currentEnemy.effectAnchor;
 
+    private void Awake()
+    {
+        GameManager.Instance.onNetworkSpawn += OnNetworkSpawn;
+    }
     private void Start()
     {
         GameManager.Instance.enemyIndex.OnValueChanged += (prev, current) =>
@@ -32,11 +36,8 @@ public class BattleUI : MonoBehaviour
             OnEnemyHpChange(-1.0f, GameManager.Instance.enemyHp.Value);
         };
         GameManager.Instance.onPlayersChange += OnPlayersChange;
-        OnPlayersChange();
         GameManager.Instance.enemyHp.OnValueChanged += OnEnemyHpChange;
-        OnEnemyHpChange(-1.0f, GameManager.Instance.enemyHp.Value);
         GameManager.Instance.playerTeamHp.OnValueChanged += OnPlayerTeamHpChange;
-        OnPlayerTeamHpChange(-1.0f, GameManager.Instance.playerTeamHp.Value);
         GameManager.Instance.onVictory += () => { victory.gameObject.SetActive(true); victory.DOFade(1.0f, endFadeTime); };
         GameManager.Instance.onDefeat += () => { defeat.gameObject.SetActive(true); defeat.DOFade(1.0f, endFadeTime); };
         GameManager.Instance.onEnemyAttack += (damage) =>
@@ -44,6 +45,15 @@ public class BattleUI : MonoBehaviour
             attackEffect.Get(enemyEffectAnchor);
         };
     }
+
+    private void OnNetworkSpawn()
+    {
+        if (GameManager.Instance.currentEnemy != null) enemyNameText.text = GameManager.Instance.currentEnemy.enemyName;
+        OnPlayersChange();
+        OnEnemyHpChange(-1.0f, GameManager.Instance.enemyHp.Value);
+        OnPlayerTeamHpChange(-1.0f, GameManager.Instance.playerTeamHp.Value);
+    }
+
     void OnPlayersChange()
     {
         for (int i = 0; i < SessionManager.maxPlayers; i++)

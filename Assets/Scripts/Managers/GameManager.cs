@@ -65,6 +65,13 @@ public class GameManager : NetworkBehaviour
             battleMusic.Play();
         };
     }
+    public event Action onNetworkSpawn;
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        if (currentEnemy != null) currentEnemy.gameObject.SetActive(true);
+        onNetworkSpawn?.Invoke();
+    }
     private void OnEnable()
     {
         NetworkManager.Singleton.OnConnectionEvent += OnConnectionEvent;
@@ -97,6 +104,7 @@ public class GameManager : NetworkBehaviour
     {
         if (!IsHost || gameState.Value != GameState.Intermission) return;
         SessionManager.Instance.activeSession.AsHost().IsLocked = true;
+        SessionManager.Instance.activeSession.AsHost().RefreshAsync();
         gameState.Value = GameState.RoundInProgress;
         enemyIndex.Value = UnityEngine.Random.Range(0, enemyList.Count);
         Timing.RunCoroutine(StartWait().CancelWith(gameObject));
@@ -106,8 +114,10 @@ public class GameManager : NetworkBehaviour
         yield return Timing.WaitForSeconds(3.0f);
         MakeNewQuiz();
     }
+    readonly List<Player> quizReceivers = new();
     void MakeNewQuiz()
     {
+        quizReceivers.Clear();
         playerAnswers.Clear();
         foreach(var player in players)
         {
@@ -117,7 +127,11 @@ public class GameManager : NetworkBehaviour
         StartGetQuizRpc();
         AIRequestManager.Instance.GetEnglishQuiz(quiz =>
         {
-            GetQuizRpc(quiz);
+            foreach (var i in players)
+            {
+                quizReceivers.Add(i);
+                GetQuizRpc(quiz, RpcTarget.Single(i.OwnerClientId, RpcTargetUse.Temp));
+            }
         });
     }
     string currentQuiz;
@@ -126,8 +140,8 @@ public class GameManager : NetworkBehaviour
     readonly Dictionary<Player, string> playerAnswers = new();
     [Rpc(SendTo.Everyone)]
     public void StartGetQuizRpc() => onQuizGetStart?.Invoke();
-    [Rpc(SendTo.Everyone)]
-    public void GetQuizRpc(FixedString4096Bytes quiz)
+    [Rpc(SendTo.SpecifiedInParams)]
+    public void GetQuizRpc(FixedString4096Bytes quiz, RpcParams rpcParams = new())
     {
         currentQuiz = quiz.ToString();
         onQuizGet?.Invoke(currentQuiz);
@@ -139,10 +153,10 @@ public class GameManager : NetworkBehaviour
         if(playerAnswers.ContainsKey(answerer)) return;
         playerAnswers.Add(answerer, answer.ToString());
         answerer.answered.Value = true;
-        if(playerAnswers.Count >= players.Count)
+        if(playerAnswers.Count >= quizReceivers.Count)
         {
             List<string> answers = new();
-            foreach(var player in players)
+            foreach(var player in quizReceivers)
             {
                 answers.Add(playerAnswers[player]);
             }

@@ -40,8 +40,13 @@ public class InGameUI : MonoBehaviour, ITabOpener
         {
             if (current != GameState.Intermission) intermissionUI.Hide();
         };
+        if(GameManager.Instance.gameState.Value != GameState.Intermission) intermissionUI.Hide(true);
         GameManager.Instance.onQuizGetStart += () => quizUI.Show();
-        GameManager.Instance.onQuizGet += (quiz) => quizUI.Set(quiz);
+        GameManager.Instance.onQuizGet += (quiz) =>
+        {
+            quizUI.Show();
+            quizUI.Set(quiz);
+        };
     }
     private void Update()
     {
